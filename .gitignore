@@ -1,0 +1,5 @@
+config.ini
+settings.ini
+*.log
+.vscode/
+.history/

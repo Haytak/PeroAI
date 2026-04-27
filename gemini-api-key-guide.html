@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Як отримати Gemini API ключ / How to Get a Gemini API Key</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --surface: #13131a;
+      --surface2: #1c1c28;
+      --border: #2a2a3d;
+      --accent: #4f8ef7;
+      --accent2: #7eaaff;
+      --accent-glow: rgba(79,142,247,0.18);
+      --text: #e8e8f0;
+      --muted: #8888aa;
+      --green: #22c55e;
+      --green-bg: rgba(34,197,94,0.08);
+      --code-bg: #0f0f18;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(79,142,247,0.11) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── LANGUAGE SWITCHER ── */
+    .lang-bar { display: flex; justify-content: flex-end; padding: 18px 0 0; }
+
+    .lang-switcher {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 18px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s;
+    }
+    .lang-btn .flag { font-size: 1rem; }
+    .lang-btn.active { color: var(--accent); background: var(--accent-glow); }
+    .lang-btn:first-child { border-right: 1px solid var(--border); }
+    .lang-btn:hover:not(.active) { color: var(--text); }
+
+    /* ── FADE TRANSITION ── */
+    .lang-content { display: none; animation: fadeIn 0.3s ease both; }
+    .lang-content.visible { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── HEADER ── */
+    header { text-align: center; padding: 48px 0 52px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(79,142,247,0.3);
+      color: var(--accent2);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+    }
+    .badge::before { content: '◈'; font-size: 13px; }
+
+    header h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.9rem, 5vw, 2.9rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 30%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 18px;
+    }
+
+    header p { color: var(--muted); font-size: 1.05rem; line-height: 1.65; max-width: 520px; margin: 0 auto 36px; }
+
+    .meta-row { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+    .meta-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 8px;
+    }
+    .meta-chip span { color: var(--text); font-weight: 500; }
+
+    /* ── INTRO CARD ── */
+    .intro-card {
+      background: linear-gradient(135deg, var(--surface) 0%, #16161f 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 48px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .intro-icon { font-size: 2.2rem; flex-shrink: 0; margin-top: 2px; filter: drop-shadow(0 0 12px rgba(79,142,247,0.4)); }
+    .intro-card h2 { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .intro-card p { font-size: 0.93rem; color: var(--muted); line-height: 1.65; }
+    .intro-card a { color: var(--accent2); text-decoration: none; border-bottom: 1px solid rgba(126,170,255,0.4); transition: border-color 0.2s; }
+    .intro-card a:hover { border-color: var(--accent2); }
+
+    /* ── SECTION LABEL ── */
+    .section-label { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-label h2 { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── STEPS ── */
+    .steps { display: flex; flex-direction: column; gap: 20px; margin-bottom: 48px; }
+
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .lang-content.visible .step { animation: stepIn 0.45s ease both; }
+    .lang-content.visible .step:nth-child(1) { animation-delay: 0.04s; }
+    .lang-content.visible .step:nth-child(2) { animation-delay: 0.09s; }
+    .lang-content.visible .step:nth-child(3) { animation-delay: 0.14s; }
+    .lang-content.visible .step:nth-child(4) { animation-delay: 0.19s; }
+    .lang-content.visible .step:nth-child(5) { animation-delay: 0.24s; }
+    .lang-content.visible .step:nth-child(6) { animation-delay: 0.29s; }
+    .step:hover { border-color: rgba(79,142,247,0.35); transform: translateY(-2px); }
+
+    @keyframes stepIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-header { display: flex; align-items: center; gap: 16px; padding: 20px 24px; }
+
+    .step-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid rgba(79,142,247,0.25);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-title-block { flex: 1; }
+    .step-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .step-sub { font-size: 0.8rem; color: var(--muted); }
+    .step-emoji { font-size: 1.4rem; flex-shrink: 0; }
+    .step-body { padding: 0 24px 22px 76px; }
+    .step-body p { font-size: 0.9rem; color: #b0b0c8; line-height: 1.7; margin-bottom: 14px; }
+    .step-body p:last-child { margin-bottom: 0; }
+    .step-body strong { color: var(--text); font-weight: 600; }
+
+    code { font-family: 'DM Mono', monospace; font-size: 0.82em; background: var(--code-bg); border: 1px solid var(--border); color: var(--accent2); padding: 2px 6px; border-radius: 5px; }
+
+    /* ── URL BOX ── */
+    .url-box { display: flex; align-items: center; gap: 10px; background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 11px 16px; margin: 12px 0; }
+    .url-box span { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--accent2); flex: 1; word-break: break-all; }
+
+    .copy-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+    /* ── NOTE ── */
+    .note {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin: 12px 0;
+    }
+    .note-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .note-icon::before { content: '💡'; }
+    .note p { font-size: 0.85rem; color: #9090b0; margin: 0 !important; line-height: 1.6; }
+    .note.success { border-left-color: var(--green); }
+    .note.success .note-icon::before { content: '✅'; }
+    .note.warning { border-left-color: #f59e0b; }
+    .note.warning .note-icon::before { content: '⚠️'; }
+
+    /* ── PLAN TABLE ── */
+    .plan-table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 0.87rem; }
+    .plan-table th { background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    .plan-table td { padding: 10px 14px; border-bottom: 1px solid rgba(42,42,61,0.5); color: #b0b0c8; vertical-align: top; }
+    .plan-table tr:last-child td { border-bottom: none; }
+    .plan-table td:first-child { color: var(--text); font-weight: 500; }
+
+    .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+    .tag.free { background: var(--green-bg); color: var(--green); }
+    .tag.paid { background: rgba(79,142,247,0.1); color: var(--accent2); }
+
+    /* ── FINAL BOX ── */
+    .final-box {
+      background: linear-gradient(135deg, rgba(79,142,247,0.08) 0%, transparent 60%);
+      border: 1px solid rgba(79,142,247,0.25);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .final-box .final-icon { font-size: 2.5rem; margin-bottom: 14px; display: block; }
+    .final-box h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
+    .final-box p { color: var(--muted); font-size: 0.92rem; line-height: 1.65; max-width: 480px; margin: 0 auto 20px; }
+
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 12px 26px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-link:hover { background: var(--accent2); transform: translateY(-1px); }
+
+    /* ── FAQ ── */
+    .faq { margin-bottom: 48px; }
+    details { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: border-color 0.2s; }
+    details:hover { border-color: rgba(79,142,247,0.25); }
+    details[open] { border-color: rgba(79,142,247,0.35); }
+    summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; font-weight: 600; font-size: 0.92rem; user-select: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; font-size: 1.2rem; color: var(--muted); line-height: 1; flex-shrink: 0; margin-left: 12px; }
+    details[open] summary::after { content: '−'; }
+    .faq-body { padding: 0 20px 16px; font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+    .faq-body a { color: var(--accent2); text-decoration: none; }
+    .faq-body a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding-top: 24px; border-top: 1px solid var(--border); }
+    footer a { color: var(--accent2); text-decoration: none; }
+
+    @media (max-width: 580px) {
+      .step-body { padding-left: 24px; }
+      .intro-card { flex-direction: column; }
+      .plan-table { font-size: 0.78rem; }
+      .lang-btn { padding: 8px 12px; font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- LANGUAGE SWITCHER -->
+  <div class="lang-bar">
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="btn-uk" onclick="setLang('uk')">
+        <span class="flag">🇺🇦</span> UA
+      </button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">
+        <span class="flag">🇬🇧</span> EN
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ UKRAINIAN ══════════════════ -->
+  <div class="lang-content visible" id="content-uk">
+
+    <header>
+      <div class="badge">Покрокова інструкція</div>
+      <h1>Як отримати Gemini API ключ</h1>
+      <p>Google Gemini надає безкоштовний доступ до своїх моделей через Google AI Studio. Цей гайд проведе вас від реєстрації до готового ключа за 3 хвилини.</p>
+      <div class="meta-row">
+        <div class="meta-chip">⏱ Час: <span>~3 хвилини</span></div>
+        <div class="meta-chip">💳 Без картки: <span>безкоштовний план</span></div>
+        <div class="meta-chip">🌍 Мова сайту: <span>Англійська</span></div>
+      </div>
+    </header>
+
+    <div class="intro-card">
+      <div class="intro-icon">✦</div>
+      <div>
+        <h2>Що таке Gemini API і навіщо потрібен ключ?</h2>
+        <p>
+          <a href="https://ai.google.dev" target="_blank">Google Gemini API</a> — це офіційний інтерфейс для роботи з мультимодальними моделями Google
+          (Gemini 2.0 Flash, Gemini 1.5 Pro та ін.). API ключ — ваш токен для відправки запитів
+          з коду, скриптів або сторонніх інструментів. Безкоштовний рівень доступний без кредитної картки.
+        </p>
+      </div>
+    </div>
+
+    <div class="section-label"><h2>Покрокова інструкція</h2></div>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">01</div>
+          <div class="step-title-block">
+            <div class="step-title">Перейдіть до Google AI Studio</div>
+            <div class="step-sub">Офіційний портал для розробників</div>
+          </div>
+          <div class="step-emoji">🌐</div>
+        </div>
+        <div class="step-body">
+          <p>Відкрийте браузер і перейдіть за посиланням нижче. Це Google AI Studio — офіційна платформа для роботи з Gemini API, де керуються ключі та проводяться тести.</p>
+          <div class="url-box">
+            <span id="uk-url1">https://aistudio.google.com</span>
+            <button class="copy-btn" onclick="copyUrl('uk-url1', this, 'uk')">Копіювати</button>
+          </div>
+          <div class="note">
+            <div class="note-icon"></div>
+            <p>Також можна дістатись через офіційну документацію на <strong>ai.google.dev</strong> → кнопка <strong>"Get API key"</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">02</div>
+          <div class="step-title-block">
+            <div class="step-title">Увійдіть за допомогою Google-акаунту</div>
+            <div class="step-sub">Реєстрація окремого акаунту не потрібна</div>
+          </div>
+          <div class="step-emoji">👤</div>
+        </div>
+        <div class="step-body">
+          <p>Google AI Studio використовує ваш існуючий Google-акаунт. Натисніть <strong>"Sign in"</strong> і оберіть потрібний акаунт.</p>
+          <p>Якщо ви ще не залогінені в Google — введіть email та пароль від вашого Google-акаунту.</p>
+          <div class="note">
+            <div class="note-icon"></div>
+            <p>Підійде будь-який Google-акаунт: особистий Gmail, корпоративний Google Workspace або навчальний. Кредитна картка на безкоштовному рівні не потрібна.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">03</div>
+          <div class="step-title-block">
+            <div class="step-title">Прийміть умови використання</div>
+            <div class="step-sub">Тільки при першому вході</div>
+          </div>
+          <div class="step-emoji">📋</div>
+        </div>
+        <div class="step-body">
+          <p>При першому вході Google AI Studio може показати вікно з умовами використання (Terms of Service). Прочитайте та натисніть <strong>"I agree"</strong> або <strong>"Continue"</strong>.</p>
+          <p>Також може з'явитись вибір країни та підтвердження вікового обмеження. Заповніть та підтвердіть.</p>
+          <div class="note warning">
+            <div class="note-icon"></div>
+            <p>Якщо ваш акаунт є шкільним або керованим організацією, адміністратор може заблокувати доступ до AI Studio. У такому випадку використайте особистий Google-акаунт.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">04</div>
+          <div class="step-title-block">
+            <div class="step-title">Натисніть "Get API key"</div>
+            <div class="step-sub">Знайдіть кнопку в лівому меню або на головній</div>
+          </div>
+          <div class="step-emoji">🔑</div>
+        </div>
+        <div class="step-body">
+          <p>У лівому бічному меню знайдіть і натисніть <strong>"Get API key"</strong>. Або перейдіть напряму за посиланням:</p>
+          <div class="url-box">
+            <span id="uk-url2">https://aistudio.google.com/apikey</span>
+            <button class="copy-btn" onclick="copyUrl('uk-url2', this, 'uk')">Копіювати</button>
+          </div>
+          <div class="note">
+            <div class="note-icon"></div>
+            <p>На цій сторінці відображаються всі ваші API ключі та проєкти Google Cloud, до яких вони прив'язані.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">05</div>
+          <div class="step-title-block">
+            <div class="step-title">Створіть новий API ключ</div>
+            <div class="step-sub">Оберіть проєкт або створіть новий</div>
+          </div>
+          <div class="step-emoji">✨</div>
+        </div>
+        <div class="step-body">
+          <p>Натисніть кнопку <strong>"Create API key"</strong>. З'явиться діалог із вибором проєкту Google Cloud.</p>
+          <p>
+            <strong>Якщо у вас ще немає проєкту:</strong> натисніть <strong>"Create API key in new project"</strong> — Google автоматично створить новий безкоштовний проєкт.<br><br>
+            <strong>Якщо вже є проєкт:</strong> оберіть його зі списку та натисніть <strong>"Create API key in existing project"</strong>.
+          </p>
+          <div class="note success">
+            <div class="note-icon"></div>
+            <p>Ключ буде згенеровано миттєво та показано у вікні. Натисніть іконку копіювання поруч з ключем або кнопку <strong>"Copy"</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">06</div>
+          <div class="step-title-block">
+            <div class="step-title">Збережіть ключ у безпечному місці</div>
+            <div class="step-sub">Нікому не передавайте та не публікуйте</div>
+          </div>
+          <div class="step-emoji">🔒</div>
+        </div>
+        <div class="step-body">
+          <p>Ключ виглядає приблизно так: <code>AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXX</code>. Збережіть його надійно:</p>
+          <p>
+            <strong>Рекомендовані варіанти:</strong><br>
+            • Менеджер паролів (Bitwarden, 1Password, KeePass)<br>
+            • Файл <code>.env</code> у проєкті (додайте до <code>.gitignore</code>!)<br>
+            • Змінна середовища <code>GEMINI_API_KEY</code> або <code>GOOGLE_API_KEY</code> в системі
+          </p>
+          <div class="note">
+            <div class="note-icon"></div>
+            <p>На відміну від Groq, Google AI Studio дозволяє переглянути ключ повторно на сторінці керування. Але все одно рекомендуємо зберігати його окремо та не публікувати в коді.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section-label"><h2>Безкоштовний vs Платний план</h2></div>
+    <div class="step" style="margin-bottom: 48px;">
+      <div style="padding: 8px 0 4px; overflow-x: auto;">
+        <table class="plan-table">
+          <thead><tr><th>Параметр</th><th>Free (безкоштовний)</th><th>Pay-as-you-go</th></tr></thead>
+          <tbody>
+            <tr><td>Вартість</td><td><span class="tag free">✓ Безкоштовно</span></td><td><span class="tag paid">$ За токени</span></td></tr>
+            <tr><td>Rate limits</td><td>15 RPM / 1M TPM / 1500 RPD</td><td>Вищі ліміти</td></tr>
+            <tr><td>Моделі</td><td>Gemini 2.0 Flash, 1.5 Flash та ін.</td><td>Всі, включно з Pro</td></tr>
+            <tr><td>Дані для навчання</td><td>Можуть використовуватись</td><td>Не використовуються</td></tr>
+            <tr><td>Кредитна картка</td><td>Не потрібна</td><td>Потрібна</td></tr>
+            <tr><td>Підходить для</td><td>Тестування, особисті проєкти</td><td>Production, комерційні застосунки</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="final-box">
+      <span class="final-icon">✦</span>
+      <h3>Готово! Ваш ключ у руках</h3>
+      <p>Тепер ви можете використовувати Gemini API у своїх застосунках, скриптах Python, AutoHotkey або будь-якому інструменті, що підтримує Google Generative AI.</p>
+      <a href="https://aistudio.google.com/apikey" class="btn-link" target="_blank">➜ Відкрити Google AI Studio</a>
+    </div>
+
+    <div class="section-label"><h2>Поширені питання</h2></div>
+    <div class="faq">
+      <details>
+        <summary>Які моделі доступні безкоштовно?</summary>
+        <div class="faq-body">На безкоштовному рівні доступні <strong>Gemini 2.0 Flash</strong>, <strong>Gemini 1.5 Flash</strong>, <strong>Gemini 1.5 Flash-8B</strong> та деякі інші. Актуальний список — на сторінці <a href="https://ai.google.dev/gemini-api/docs/models/gemini" target="_blank">моделей в документації</a>.</div>
+      </details>
+      <details>
+        <summary>Де переглянути або видалити ключ?</summary>
+        <div class="faq-body">Всі ваші ключі відображаються на сторінці <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>. Там само їх можна скопіювати або видалити.</div>
+      </details>
+      <details>
+        <summary>Gemini API сумісний з OpenAI API?</summary>
+        <div class="faq-body">Так, частково. Google надає OpenAI-сумісний endpoint: змініть <code>base_url</code> на <code>https://generativelanguage.googleapis.com/v1beta/openai/</code> і передайте ваш Gemini API ключ.</div>
+      </details>
+      <details>
+        <summary>Чи використовуються мої дані для навчання моделей?</summary>
+        <div class="faq-body">На безкоштовному рівні — так, Google може використовувати запити для покращення моделей. На платному рівні (Pay-as-you-go) ваші дані <strong>не використовуються</strong> для навчання.</div>
+      </details>
+      <details>
+        <summary>Чи потрібен VPN для доступу з України?</summary>
+        <div class="faq-body">Google AI Studio наразі доступний з України без VPN. Якщо виникають проблеми — спробуйте VPN із виходом через США або Євросоюз.</div>
+      </details>
+    </div>
+
+    <footer>
+      <p>Gemini та всі пов'язані торгові марки є власністю <a href="https://google.com" target="_blank">Google LLC</a> · Інструкція носить ознайомчий характер</p>
+    </footer>
+
+  </div><!-- /content-uk -->
+
+
+  <!-- ══════════════════ ENGLISH ══════════════════ -->
+  <div class="lang-content" id="content-en">
+
+    <header>
+      <div class="badge">Step-by-Step Guide</div>
+      <h1>How to Get a Gemini API Key</h1>
+      <p>Google Gemini provides free access to its models via Google AI Studio. This guide takes you from sign-in to a ready-to-use API key in under 3 minutes.</p>
+      <div class="meta-row">
+        <div class="meta-chip">⏱ Time: <span>~3 minutes</span></div>
+        <div class="meta-chip">💳 No card: <span>free tier available</span></div>
+        <div class="meta-chip">🌍 Site language: <span>English</span></div>
+      </div>
+    </header>
+
+    <div class="intro-card">
+      <div class="intro-icon">✦</div>
+      <div>
+        <h2>What is the Gemini API and why do I need a key?</h2>
+        <p>
+          The <a href="https://ai.google.dev" target="_blank">Google Gemini API</a> is the official interface for working with Google's multimodal models
+          (Gemini 2.0 Flash, Gemini 1.5 Pro, and more). An API key is your personal access token —
+          it allows you to send requests from code, scripts, or third-party tools. A free tier is available with no credit card required.
+        </p>
+      </div>
+    </div>
+
+    <div class="section-label"><h2>Step-by-Step Instructions</h2></div>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">01</div>
+          <div class="step-title-block">
+            <div class="step-title">Go to Google AI Studio</div>
+            <div class="step-sub">The official developer portal</div>
+          </div>
+          <div class="step-emoji">🌐</div>
+        </div>
+        <div class="step-body">
+          <p>Open your browser and navigate to the link below. Google AI Studio is the official platform for working with the Gemini API — it's where you manage keys, run tests, and explore models.</p>
+          <div class="url-box">
+            <span id="en-url1">https://aistudio.google.com</span>
+            <button class="copy-btn" onclick="copyUrl('en-url1', this, 'en')">Copy</button>
+          </div>
+          <div class="note">
+            <div class="note-icon"></div>
+            <p>You can also get there from the official docs at <strong>ai.google.dev</strong> by clicking the <strong>"Get API key"</strong> button.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">02</div>
+          <div class="step-title-block">
+            <div class="step-title">Sign in with your Google account</div>
+            <div class="step-sub">No separate registration needed</div>
+          </div>
+          <div class="step-emoji">👤</div>
+        </div>
+        <div class="step-body">
+          <p>Google AI Studio uses your existing Google account. Click <strong>"Sign in"</strong> and select the account you want to use.</p>
+          <p>If you aren't already signed in to Google, enter your Gmail address and password.</p>
+          <div class="note">
+            <div class="note-icon"></div>
+            <p>Any Google account works: personal Gmail, Google Workspace, or a school account. No credit card is required for the free tier.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">03</div>
+          <div class="step-title-block">
+            <div class="step-title">Accept the Terms of Service</div>
+            <div class="step-sub">First-time login only</div>
+          </div>
+          <div class="step-emoji">📋</div>
+        </div>
+        <div class="step-body">
+          <p>On your first visit, Google AI Studio will display a Terms of Service dialog. Review and click <strong>"I agree"</strong> or <strong>"Continue"</strong>.</p>
+          <p>You may also be asked to confirm your country and age. Fill in the fields and proceed.</p>
+          <div class="note warning">
+            <div class="note-icon"></div>
+            <p>If your account is managed by a school or organization, the admin may have blocked access to AI Studio. In that case, use a personal Google account instead.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">04</div>
+          <div class="step-title-block">
+            <div class="step-title">Click "Get API key"</div>
+            <div class="step-sub">Find it in the left sidebar or on the home screen</div>
+          </div>
+          <div class="step-emoji">🔑</div>
+        </div>
+        <div class="step-body">
+          <p>In the left sidebar, find and click <strong>"Get API key"</strong>. Or go directly to:</p>
+          <div class="url-box">
+            <span id="en-url2">https://aistudio.google.com/apikey</span>
+            <button class="copy-btn" onclick="copyUrl('en-url2', this, 'en')">Copy</button>
+          </div>
+          <div class="note">
+            <div class="note-icon"></div>
+            <p>This page shows all your existing API keys and the Google Cloud projects they are linked to.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">05</div>
+          <div class="step-title-block">
+            <div class="step-title">Create a new API key</div>
+            <div class="step-sub">Choose a project or create a new one</div>
+          </div>
+          <div class="step-emoji">✨</div>
+        </div>
+        <div class="step-body">
+          <p>Click <strong>"Create API key"</strong>. A dialog will appear asking you to select a Google Cloud project.</p>
+          <p>
+            <strong>If you have no project yet:</strong> click <strong>"Create API key in new project"</strong> — Google will automatically create a free project for you.<br><br>
+            <strong>If you already have a project:</strong> select it from the list and click <strong>"Create API key in existing project"</strong>.
+          </p>
+          <div class="note success">
+            <div class="note-icon"></div>
+            <p>The key is generated instantly and shown in the dialog. Click the copy icon next to it or press the <strong>"Copy"</strong> button.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num">06</div>
+          <div class="step-title-block">
+            <div class="step-title">Store your key securely</div>
+            <div class="step-sub">Never share or publish it publicly</div>
+          </div>
+          <div class="step-emoji">🔒</div>
+        </div>
+        <div class="step-body">
+          <p>Your key looks something like: <code>AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXX</code>. Store it somewhere safe:</p>
+          <p>
+            <strong>Recommended options:</strong><br>
+            • A password manager (Bitwarden, 1Password, KeePass)<br>
+            • A <code>.env</code> file in your project (add to <code>.gitignore</code>!)<br>
+            • An environment variable <code>GEMINI_API_KEY</code> or <code>GOOGLE_API_KEY</code> on your OS
+          </p>
+          <div class="note">
+            <div class="note-icon"></div>
+            <p>Unlike Groq, Google AI Studio lets you view your key again later on the management page. Still, treat it like a password — never commit it to source code or post it publicly.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section-label"><h2>Free vs Paid Plan</h2></div>
+    <div class="step" style="margin-bottom: 48px;">
+      <div style="padding: 8px 0 4px; overflow-x: auto;">
+        <table class="plan-table">
+          <thead><tr><th>Feature</th><th>Free Tier</th><th>Pay-as-you-go</th></tr></thead>
+          <tbody>
+            <tr><td>Cost</td><td><span class="tag free">✓ Free</span></td><td><span class="tag paid">$ Per token</span></td></tr>
+            <tr><td>Rate limits</td><td>15 RPM / 1M TPM / 1500 RPD</td><td>Higher limits</td></tr>
+            <tr><td>Models</td><td>Gemini 2.0 Flash, 1.5 Flash, etc.</td><td>All, including Pro</td></tr>
+            <tr><td>Data for training</td><td>May be used</td><td>Not used</td></tr>
+            <tr><td>Credit card</td><td>Not required</td><td>Required</td></tr>
+            <tr><td>Best for</td><td>Testing, hobby projects, learning</td><td>Production, commercial apps</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="final-box">
+      <span class="final-icon">✦</span>
+      <h3>You're all set!</h3>
+      <p>You can now use the Gemini API in your apps, Python scripts, or any tool that supports the Google Generative AI SDK.</p>
+      <a href="https://aistudio.google.com/apikey" class="btn-link" target="_blank">➜ Open Google AI Studio</a>
+    </div>
+
+    <div class="section-label"><h2>FAQ</h2></div>
+    <div class="faq">
+      <details>
+        <summary>Which models are available for free?</summary>
+        <div class="faq-body">The free tier includes <strong>Gemini 2.0 Flash</strong>, <strong>Gemini 1.5 Flash</strong>, <strong>Gemini 1.5 Flash-8B</strong>, and others. See the full current list in the <a href="https://ai.google.dev/gemini-api/docs/models/gemini" target="_blank">models documentation</a>.</div>
+      </details>
+      <details>
+        <summary>Where can I view or delete my key?</summary>
+        <div class="faq-body">All your keys are listed at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>. You can copy or delete them there at any time.</div>
+      </details>
+      <details>
+        <summary>Is the Gemini API compatible with the OpenAI API?</summary>
+        <div class="faq-body">Yes, partially. Google provides an OpenAI-compatible endpoint: change <code>base_url</code> to <code>https://generativelanguage.googleapis.com/v1beta/openai/</code> and pass your Gemini API key.</div>
+      </details>
+      <details>
+        <summary>Will my data be used to train Google's models?</summary>
+        <div class="faq-body">On the free tier — yes, Google may use your prompts to improve models. On the paid tier (Pay-as-you-go), your data is <strong>not used</strong> for training.</div>
+      </details>
+      <details>
+        <summary>Are there any geographic restrictions?</summary>
+        <div class="faq-body">Google AI Studio is generally available worldwide. If you encounter access issues, try a VPN with an exit node in the US or EU.</div>
+      </details>
+    </div>
+
+    <footer>
+      <p>Gemini and related trademarks are the property of <a href="https://google.com" target="_blank">Google LLC</a> · This guide is for informational purposes only</p>
+    </footer>
+
+  </div><!-- /content-en -->
+
+</div><!-- /container -->
+
+<script>
+  function setLang(lang) {
+    ['uk', 'en'].forEach(l => {
+      document.getElementById('content-' + l).classList.toggle('visible', l === lang);
+      document.getElementById('btn-' + l).classList.toggle('active', l === lang);
+    });
+    document.documentElement.lang = lang;
+    document.querySelectorAll('details[open]').forEach(d => d.removeAttribute('open'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function copyUrl(id, btn, lang) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = lang === 'uk' ? 'Скопійовано ✓' : 'Copied ✓';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = lang === 'uk' ? 'Копіювати' : 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
