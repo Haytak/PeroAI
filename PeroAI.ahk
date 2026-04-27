@@ -206,10 +206,12 @@ GetLoc(lang) {
 SetAutostart(neutron, enable) {
     regPath := "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run"
     if (enable) {
+        ; Якщо скрипт скомпільований, використовуємо тільки шлях до EXE.
+        ; Якщо ні - шлях до AHK + шлях до скрипта.
         cmd := A_IsCompiled ? '"' A_ScriptFullPath '"' : '"' A_AhkPath '" "' A_ScriptFullPath '"'
-        RegWrite(cmd, "REG_SZ", regPath, "FixerAI")
+        RegWrite(cmd, "REG_SZ", regPath, "PeroAI")
     } else {
-        try RegDelete(regPath, "FixerAI")
+        try RegDelete(regPath, "PeroAI")
     }
 }
 

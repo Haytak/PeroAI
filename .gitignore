@@ -3,3 +3,5 @@ settings.ini
 *.log
 .vscode/
 .history/
+*.zip
+PeroAI.zip
