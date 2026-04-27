@@ -23,10 +23,10 @@
 ## 🚀 Getting Started
 
 1.  Install [AutoHotkey v2](https://www.autohotkey.com/).
-2.  Download the project files to a separate folder.
+2.  Download the [project files](https://github.com/Haytak/PeroAI/releases) and extract them to a separate folder.
 3. Run `PeroAI.ahk`.
 4.  On the first run, the app will create configuration files automatically.
-5.  Press `Win+S` (or use the tray icon) to open settings.
+5.  Press `Win+S` to open settings.
 6.  Enter your API keys for Groq or Gemini (guides are linked in the settings).
 7.  Select any text and press `Win+Q` for correction or `Win+A` for a custom prompt!
 
@@ -55,10 +55,10 @@
 ## 🚀 Як почати
 
 1.  Встановіть [AutoHotkey v2](https://www.autohotkey.com/).
-2.  Завантажте файли проекту у окрему папку.
+2.  Завантажте [файли проекту](https://github.com/Haytak/PeroAI/releases) та розпакуйте у окрему папку.
 3.  Запустіть `PeroAI.ahk`.
 4.  При першому запуску програма створить файли конфігурації автоматично.
-5.  Натисніть `Win+S` (або через іконку в треї), щоб відкрити налаштування.
+5.  Натисніть `Win+S`, щоб відкрити налаштування.
 6.  Введіть ваші API ключі для Groq або Gemini (посилання на інструкції є в самому додатку).
 7.  Виділіть будь-який текст і натисніть `Win+Q` для корекції або `Win+A` для довільного запиту!
 
